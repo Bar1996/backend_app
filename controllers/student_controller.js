@@ -1,17 +1,37 @@
-const getStudent = (req, res) => {
+const Student = require('../models/student_model');
+
+const getStudents = (req, res) => {
     res.send("Student get");
 };
 
-const postStudent = (req, res) => {
-    res.send("Student post");
+const getStudentById = (req, res) => {
+    console.log(req.params);
+    res.send("Student by id");
 };
 
-const putStudent = (req, res) => {
+const postStudents = async (req, res) => {
+    console.log("Student post");
+    try{
+        const student = await Student.create(req.body);
+        res.status(201).send(student);
+    } catch (error){
+        console.log(error);
+        res.status(400).send(error.message);
+    }
+};
+
+const putStudents = (req, res) => {
     res.send("Student put");
 };
 
-const deleteStudent = (req, res) => {
+const deleteStudents = (req, res) => {
     res.send("Student delete");
 };
 
-module.exports = {getStudent, postStudent, putStudent, deleteStudent}
+module.exports = {
+    getStudents,
+    getStudentById,
+    postStudents,
+    putStudents,
+    deleteStudents,
+  };

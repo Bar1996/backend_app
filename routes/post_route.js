@@ -1,20 +1,24 @@
 const express = require("express");
 const router = express.Router();
 
-router.get("/student", (req, res) => {
-    res.send("Student get");
+router.get("/", (req, res) => {
+  res.send("post get");
 });
 
-router.post("/student", (req, res) => {
-    res.send("Student post");
+router.get("/:id", (req, res) => {
+  res.send("post get by id");
 });
 
-router.put("/student", (req, res) => {
-    res.send("Student put");
+router.post("/", (req, res) => {
+  res.send("post post" + req.body);
 });
 
-router.delete("/student", (req, res) => {
-    res.send("Student delete");
+router.put("/:id", (req, res) => {
+  res.send("post put");
+});
+
+router.delete("/:id", (req, res) => {
+  res.send("post delete");
 });
 
 module.exports = router;
