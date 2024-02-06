@@ -23,7 +23,10 @@ const getStudentById = async (req, res) => {
         if(!student){
             res.status(404).send("Student not found");
         }
-        res.status(200).send(student);    
+        else{
+            res.status(200).send(student);  
+        }
+          
 
     }catch (error){
         console.log(error);
@@ -46,9 +49,16 @@ const putStudents = (req, res) => {
     res.send("Student put");
 };
 
-const deleteStudents = (req, res) => {
-    res.send("Student delete");
-};
+const deleteStudents = async (req, res) => {
+    console.log("student delete");
+    try {
+      await Student.findByIdAndDelete(req.params.id);
+      return res.status(200).send();
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error.message);
+    }
+  };
 
 module.exports = {
     getStudents,
