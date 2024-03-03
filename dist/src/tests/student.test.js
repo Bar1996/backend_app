@@ -16,11 +16,21 @@ const supertest_1 = __importDefault(require("supertest"));
 const App_1 = __importDefault(require("../App"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const student_model_1 = __importDefault(require("../models/student_model"));
+const user_model_1 = __importDefault(require("../models/user_model"));
+const testUser = {
+    email: "teststudent@gmail.com",
+    password: "123456",
+    accessToken: null
+};
 let app;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     app = yield (0, App_1.default)();
     console.log('beforeAll');
     yield student_model_1.default.deleteMany();
+    yield user_model_1.default.deleteMany({ email: testUser.email });
+    yield (0, supertest_1.default)(app).post("/auth/register").send(testUser);
+    const res = yield (0, supertest_1.default)(app).post('/auth/login').send(testUser);
+    testUser.accessToken = res.body.accessToken;
 }));
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
     console.log('afterAll');
@@ -40,7 +50,7 @@ const students = [
 ];
 describe('Student', () => {
     test('GET /student - empty collection', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).get('/student');
+        const res = yield (0, supertest_1.default)(app).get('/student').set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res.statusCode).toBe(200);
         const data = res.body;
         expect(data).toEqual([]);
@@ -48,10 +58,12 @@ describe('Student', () => {
     test('POST /student', () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield (0, supertest_1.default)(app)
             .post('/student')
-            .send(students[0]);
+            .send(students[0])
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res.statusCode).toBe(201);
         expect(res.body.name).toBe(students[0].name);
-        const res2 = yield (0, supertest_1.default)(app).get('/student');
+        const res2 = yield (0, supertest_1.default)(app).get('/student')
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res2.statusCode).toBe(200);
         const data = res2.body;
         expect(data[0].name).toBe(students[0].name);
@@ -59,20 +71,24 @@ describe('Student', () => {
         expect(data[0].age).toBe(students[0].age);
     }));
     test('GET /student/:id', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).get('/student/' + students[0]._id);
+        const res = yield (0, supertest_1.default)(app).get('/student/' + students[0]._id)
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res.statusCode).toBe(200);
         expect(res.body.name).toBe(students[0].name);
         expect(res.body._id).toBe(students[0]._id);
         expect(res.body.age).toBe(students[0].age);
     }));
     test('fail GET /student/:id', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).get('/student/00000');
+        const res = yield (0, supertest_1.default)(app).get('/student/00000')
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res.statusCode).toBe(404);
     }));
     test("DELETE /student/:id", () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).delete("/student/" + students[0]._id);
+        const res = yield (0, supertest_1.default)(app).delete("/student/" + students[0]._id)
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res.statusCode).toBe(200);
-        const res2 = yield (0, supertest_1.default)(app).get("/student/" + students[0]._id);
+        const res2 = yield (0, supertest_1.default)(app).get("/student/" + students[0]._id)
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res2.statusCode).toBe(404);
     }));
 });
