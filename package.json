@@ -9,6 +9,7 @@
     "test": "tsc && jest --detectOpenHandles --forceExit",
     "testStudent": "jest --detectOpenHandles --forceExit ./src/tests/student.test.ts",
     "testAuth": "jest --detectOpenHandles --forceExit ./src/tests/auth.test.ts",
+    "testPost": "jest --detectOpenHandles --forceExit ./src/tests/post.test.ts",
     "lint": "eslint . --ext .ts"
   },
   "author": "Bar Cohen",

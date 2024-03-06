@@ -21,6 +21,8 @@ const user = {
     password: 'teszt'
 };
 let app;
+let accessToken;
+let refreshToken;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     app = yield (0, App_1.default)();
     console.log('beforeAll');
@@ -39,12 +41,78 @@ describe('Auth test', () => {
         const res = yield (0, supertest_1.default)(app).post('/auth/login').send(user);
         expect(res.statusCode).toBe(200);
         console.log(res.body);
-        const accessToken = res.body.accessToken;
+        accessToken = res.body.accessToken;
+        refreshToken = res.body.refreshToken;
         expect(accessToken).not.toBeNull();
+        expect(refreshToken).not.toBeNull();
         const res2 = yield (0, supertest_1.default)(app).get('/student').set('Authorization', 'Bearer ' + accessToken);
         expect(res2.statusCode).toBe(200);
         const fakeToken = accessToken + 'a';
         const res3 = yield (0, supertest_1.default)(app).get('/student').set('Authorization', 'Bearer ' + fakeToken);
+        expect(res3.statusCode).not.toBe(200);
+    }));
+    const timeout = (ms) => {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
+    };
+    jest.setTimeout(100000);
+    test("refresh token", () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).post("/auth/login").send(user);
+        expect(res.statusCode).toBe(200);
+        console.log(res.body);
+        //const accessToken = res.body.accessToken;
+        refreshToken = res.body.refreshToken;
+        const res2 = yield (0, supertest_1.default)(app).get("/auth/refresh")
+            .set('Authorization', 'Bearer ' + refreshToken)
+            .send();
+        expect(res2.statusCode).toBe(200);
+        accessToken = res2.body.accessToken;
+        refreshToken = res2.body.refreshToken;
+        expect(accessToken).not.toBeNull();
+        expect(refreshToken).not.toBeNull();
+        const res3 = yield (0, supertest_1.default)(app).get("/student")
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(res3.statusCode).toBe(200);
+    }));
+    test("refresh token after expiration", () => __awaiter(void 0, void 0, void 0, function* () {
+        //sleep 6 sec check if token is expired
+        yield timeout(6000);
+        const res = yield (0, supertest_1.default)(app).get("/student")
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(res.statusCode).not.toBe(200);
+        const res2 = yield (0, supertest_1.default)(app).get("/auth/refresh")
+            .set('Authorization', 'Bearer ' + refreshToken)
+            .send();
+        expect(res2.statusCode).toBe(200);
+        accessToken = res2.body.accessToken;
+        refreshToken = res2.body.refreshToken;
+        expect(accessToken).not.toBeNull();
+        expect(refreshToken).not.toBeNull();
+        const res3 = yield (0, supertest_1.default)(app).get("/student")
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(res3.statusCode).toBe(200);
+    }));
+    test("refresh token violation", () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).get("/auth/refresh")
+            .set('Authorization', 'Bearer ' + refreshToken)
+            .send();
+        const oldRefreshToken = refreshToken;
+        if (oldRefreshToken == res.body.refreshToken) {
+            console.log("refresh token is the same");
+        }
+        expect(res.statusCode).toBe(200);
+        accessToken = res.body.accessToken;
+        refreshToken = res.body.refreshToken;
+        expect(accessToken).not.toBeNull();
+        expect(refreshToken).not.toBeNull();
+        const res2 = yield (0, supertest_1.default)(app).get("/auth/refresh")
+            .set('Authorization', 'Bearer ' + oldRefreshToken)
+            .send();
+        expect(res2.statusCode).not.toBe(200);
+        const res3 = yield (0, supertest_1.default)(app).get("/auth/refresh")
+            .set('Authorization', 'Bearer ' + refreshToken)
+            .send();
         expect(res3.statusCode).not.toBe(200);
     }));
 });
