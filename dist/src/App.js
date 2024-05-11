@@ -12,6 +12,7 @@ const student_route_1 = __importDefault(require("./routes/student_route"));
 const post_route_1 = __importDefault(require("./routes/post_route"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const auth_route_1 = __importDefault(require("./routes/auth_route"));
+const file_route_1 = __importDefault(require("./routes/file_route"));
 const initApp = () => {
     const promise = new Promise((resolve) => {
         const db = mongoose_1.default.connection;
@@ -23,6 +24,8 @@ const initApp = () => {
             app.use("/student", student_route_1.default);
             app.use("/post", post_route_1.default);
             app.use("/auth", auth_route_1.default);
+            app.use("/file", file_route_1.default);
+            app.use("/uploads", express_1.default.static("uploads"));
             resolve(app);
         });
     });

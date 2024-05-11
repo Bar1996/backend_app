@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const student_controller_1 = __importDefault(require("../controllers/student_controller"));
-const auth_middleware_1 = __importDefault(require("../common/auth_middleware"));
+// import authMiddleware from "../common/auth_middleware";
 /**
 * @swagger
 * tags:
@@ -56,7 +56,7 @@ const auth_middleware_1 = __importDefault(require("../common/auth_middleware"));
 *               items:
 *                  $ref: '#/components/schemas/Student'
 */
-router.get("/", auth_middleware_1.default, student_controller_1.default.get.bind(student_controller_1.default));
+router.get("/", student_controller_1.default.get.bind(student_controller_1.default));
 /**
  * @swagger
  * /student/{id}:
@@ -81,7 +81,7 @@ router.get("/", auth_middleware_1.default, student_controller_1.default.get.bind
  *             schema:
  *               $ref: '#/components/schemas/Student'
  */
-router.get("/:id", auth_middleware_1.default, student_controller_1.default.getById.bind(student_controller_1.default));
+router.get("/:id", student_controller_1.default.getById.bind(student_controller_1.default));
 /**
  * @swagger
  * /student:
@@ -104,8 +104,8 @@ router.get("/:id", auth_middleware_1.default, student_controller_1.default.getBy
  *             schema:
  *               $ref: '#/components/schemas/Student'
  */
-router.post("/", auth_middleware_1.default, student_controller_1.default.post.bind(student_controller_1.default));
-router.put("/:id", auth_middleware_1.default, student_controller_1.default.put.bind(student_controller_1.default));
-router.delete("/:id", auth_middleware_1.default, student_controller_1.default.remove.bind(student_controller_1.default));
+router.post("/", student_controller_1.default.post.bind(student_controller_1.default));
+router.put("/:id", student_controller_1.default.put.bind(student_controller_1.default));
+router.delete("/:id", student_controller_1.default.remove.bind(student_controller_1.default));
 exports.default = router;
 //# sourceMappingURL=student_route.js.map

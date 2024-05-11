@@ -16,9 +16,10 @@ POST http://localhost:3000/student
 Content-Type: application/json
 
 {
-    "name": "John 44",
-    "age": "20",
-    "_id": "12345678921"
+    "_id": "123456781",
+    "name": "John",
+    "avaterUrl": "https://www.google.com"
+    
 }
 
 ###
