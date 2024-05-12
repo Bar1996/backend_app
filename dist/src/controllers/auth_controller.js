@@ -19,6 +19,8 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     const email = req.body.email;
     const password = req.body.password;
+    const imgUrl = req.body.imgUrl;
+    const name = req.body.name;
     if (email == null || password == null) {
         return res.status(400).send("Missing email or password");
     }
@@ -31,7 +33,9 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const hashedPassword = yield bcrypt_1.default.hash(password, salt);
         const newUser = yield user_model_1.default.create({
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
+            imgUrl: imgUrl,
+            name: name
         });
         return res.status(200).send(newUser);
     }

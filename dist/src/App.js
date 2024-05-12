@@ -19,13 +19,13 @@ const initApp = () => {
         db.on("error", (err) => console.log(err));
         db.once("open", () => console.log("Connected to Database"));
         mongoose_1.default.connect(process.env.DATABASE_URL).then(() => {
+            app.use(body_parser_1.default.urlencoded({ extended: true, limit: '1mb' }));
             app.use(body_parser_1.default.json());
-            app.use(body_parser_1.default.urlencoded({ extended: true }));
             app.use("/student", student_route_1.default);
             app.use("/post", post_route_1.default);
             app.use("/auth", auth_route_1.default);
             app.use("/file", file_route_1.default);
-            app.use("/uploads", express_1.default.static("uploads"));
+            app.use('/uploads', express_1.default.static('uploads'));
             resolve(app);
         });
     });

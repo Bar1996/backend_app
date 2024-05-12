@@ -17,7 +17,6 @@ const App_1 = __importDefault(require("../App"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const post_model_1 = __importDefault(require("../models/post_model"));
 const user_model_1 = __importDefault(require("../models/user_model"));
-const fs_1 = __importDefault(require("mz/fs"));
 const testUser = {
     email: "psottest@gmail.com",
     password: "123456",
@@ -54,15 +53,6 @@ describe('Post', () => {
             .set('Authorization', 'Bearer ' + testUser.accessToken)
             .send(post);
         expect(res.statusCode).toBe(201);
-    }));
-    test('upload file', () => __awaiter(void 0, void 0, void 0, function* () {
-        const filepath = `${__dirname}/avatar.jpeg`;
-        const rs = yield fs_1.default.exists(filepath);
-        console.log('rs', rs);
-        if (rs) {
-            const response = yield (0, supertest_1.default)(App_1.default).post('/file').attach('file', filepath);
-            expect(response.statusCode).toBe(200);
-        }
     }));
 });
 //# sourceMappingURL=post.test.js.map

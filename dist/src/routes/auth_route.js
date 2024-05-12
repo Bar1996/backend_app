@@ -110,8 +110,8 @@ router.post("/login", auth_controller_1.default.login);
  */
 router.get("/logout", auth_controller_1.default.logout);
 /**
- * @swagger
- * /auth/refresh:
+* @swagger
+* /auth/refresh:
  *  get:
  *      summary: get new access token and refresh token using the refresh token
  *      tags: [Auth]

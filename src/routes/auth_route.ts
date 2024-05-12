@@ -73,6 +73,7 @@ import authController from "../controllers/auth_controller";
  *                          $ref: '#/components/schemas/User'
  */
 router.post("/register", authController.register);
+router.post("/google", authController.googleSignIn);
 
 /**
  * @swagger
@@ -112,8 +113,8 @@ router.post("/login", authController.login);
 router.get("/logout", authController.logout);
 
 /**
- * @swagger
- * /auth/refresh:
+* @swagger
+* /auth/refresh:
  *  get:
  *      summary: get new access token and refresh token using the refresh token
  *      tags: [Auth]

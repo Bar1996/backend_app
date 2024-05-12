@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 export interface IUser {
     email: string;
     password: string;
+    imgUrl: string;
     tokens: string[];
+    name: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -13,12 +15,20 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     tokens: {
         type: [String],
-        // required: false
+         required: false
     },
+    imgUrl: {
+        type: String,
+        required: true
+    },
+    name:{
+        type: String,
+        required: true
+    }
 });
 
 export default mongoose.model<IUser>("User", userSchema);
