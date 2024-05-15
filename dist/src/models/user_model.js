@@ -11,11 +11,11 @@ const userSchema = new mongoose_1.default.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     tokens: {
         type: [String],
-        // required: false
+        required: false
     },
     imgUrl: {
         type: String,

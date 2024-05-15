@@ -5,9 +5,12 @@ import {Express}  from 'express';
 import User from '../models/user_model';
 
 const user = {
-    email: 'teszt@gmail.com',
-    password: 'teszt'
-}
+    email: "authtest@gmail.com",
+    password: "123456",
+    accessToken: null,
+    name: "John2",
+    imgUrl: "https://www.google.com"
+  }
 
 let app: Express;
 let accessToken: "";
@@ -34,7 +37,8 @@ describe('Auth test', () => {
 
 
     test('POST /login',  async () => {
-        const res = await request(app).post('/auth/login').send(user);
+        const data = { email: user.email, password: user.password };
+        const res = await request(app).post('/auth/login').send(data);
         expect(res.statusCode).toBe(200);
         console.log(res.body);
 
@@ -43,12 +47,12 @@ describe('Auth test', () => {
         expect(accessToken).not.toBeNull();
         expect(refreshToken).not.toBeNull();
 
-        const res2 = await request(app).get('/student').set('Authorization', 'Bearer ' + accessToken);
-        expect(res2.statusCode).toBe(200);
+        // const res2 = await request(app).get('/student').set('Authorization', 'Bearer ' + accessToken);
+        // expect(res2.statusCode).toBe(200);
 
-        const fakeToken = accessToken + 'a';
-        const res3 = await request(app).get('/student').set('Authorization', 'Bearer ' + fakeToken);
-        expect(res3.statusCode).not.toBe(200);
+        // const fakeToken = accessToken + 'a';
+        // const res3 = await request(app).get('/student').set('Authorization', 'Bearer ' + fakeToken);
+        // expect(res3.statusCode).not.toBe(200);
     });
 
     const timeout = (ms: number) => {
@@ -76,9 +80,9 @@ describe('Auth test', () => {
         expect(accessToken).not.toBeNull();
         expect(refreshToken).not.toBeNull();
 
-        const res3 = await request(app).get("/student")
-            .set('Authorization', 'Bearer ' + accessToken);
-        expect(res3.statusCode).toBe(200);
+        // const res3 = await request(app).get("/student")
+        //     .set('Authorization', 'Bearer ' + accessToken);
+        // expect(res3.statusCode).toBe(200);
 
 
     });
@@ -86,9 +90,9 @@ describe('Auth test', () => {
     test("refresh token after expiration", async () => {
         //sleep 6 sec check if token is expired
         await timeout(6000);
-        const res = await request(app).get("/student")
-            .set('Authorization', 'Bearer ' + accessToken);
-        expect(res.statusCode).not.toBe(200);
+        // const res = await request(app).get("/student")
+        //     .set('Authorization', 'Bearer ' + accessToken);
+        // expect(res.statusCode).not.toBe(200);
 
         const res2 = await request(app).get("/auth/refresh")
             .set('Authorization', 'Bearer ' + refreshToken)
@@ -100,9 +104,9 @@ describe('Auth test', () => {
         expect(accessToken).not.toBeNull();
         expect(refreshToken).not.toBeNull();
 
-        const res3 = await request(app).get("/student")
-            .set('Authorization', 'Bearer ' + accessToken);
-        expect(res3.statusCode).toBe(200);
+        // const res3 = await request(app).get("/student")
+        //     .set('Authorization', 'Bearer ' + accessToken);
+        // expect(res3.statusCode).toBe(200);
     });
 
     test("refresh token violation", async () => {

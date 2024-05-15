@@ -2,12 +2,14 @@ import { Request, Response } from "express";
 import mongoose from "mongoose";
 
 
+
 class BaseController<ModelType> {
     ItemModel: mongoose.Model<ModelType>;
     constructor(ItemModel: mongoose.Model<ModelType>){
         this.ItemModel = ItemModel;
     }   
     async get  (req: Request, res: Response){
+       
         console.log("get");
         try {
             if(req.query.name){
@@ -64,7 +66,10 @@ class BaseController<ModelType> {
           res.status(400).send(error.message);
         }
       }
+
+      
 }
+
 
 
 export default BaseController;

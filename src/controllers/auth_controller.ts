@@ -87,7 +87,8 @@ const login = async (req: Request, res: Response) => {
 
     return res.status(200).send({
         accessToken: accessToken,
-        refreshToken: refreshToken
+        refreshToken: refreshToken,
+        message: "Login successful"
     });
 
    } catch (error){
@@ -100,6 +101,7 @@ const logout = async (req: Request, res: Response) => {
 }
 
 const refresh = async (req: Request, res: Response) => {
+    console.log("refresh");
     //extract token from http header
     const authHeader = req.headers['authorization'];
     const refreshTokenOrig = authHeader && authHeader.split(' ')[1];
@@ -111,20 +113,24 @@ const refresh = async (req: Request, res: Response) => {
     //verify token
     jwt.verify(refreshTokenOrig, process.env.REFRESH_TOKEN_SECRET, async (err, userInfo: { _id: string }) => {
         if (err) {
+            console.log("error here");
             return res.status(403).send("invalid token");
         }
 
         try {
             const user = await User.findById(userInfo._id);
+            console.log(user==null, user.tokens == null, user.tokens.includes(refreshTokenOrig));
             if (user == null || user.tokens == null || !user.tokens.includes(refreshTokenOrig)) {
                 if (user.tokens != null) {
                     user.tokens = [];
                     await user.save();
                 }
+                console.log("error here2");
                 return res.status(403).send("invalid token");
             }
 
             //generate new access token
+            console.log("generating new token");
             const { accessToken, refreshToken } = generateTokens(user._id.toString());
 
             //update refresh token in db
@@ -133,6 +139,7 @@ const refresh = async (req: Request, res: Response) => {
             await user.save();
 
             //return new access token & new refresh token
+            console.log("sending new token");
             return res.status(200).send({
                 accessToken: accessToken,
                 refreshToken: refreshToken

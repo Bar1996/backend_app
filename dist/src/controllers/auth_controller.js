@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const user_model_1 = __importDefault(require("../models/user_model"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const google_auth_library_1 = require("google-auth-library");
+const client = new google_auth_library_1.OAuth2Client();
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.body);
     const email = req.body.email;
@@ -133,10 +135,49 @@ const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }));
 });
+const googleSignIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const ticket = yield client.verifyIdToken({
+            idToken: req.body.credentialResponse,
+            audience: process.env.GOOGLE_CLIENT_ID
+        });
+        const payload = ticket.getPayload();
+        const email = payload === null || payload === void 0 ? void 0 : payload.email;
+        if (email != null) {
+            let user = yield user_model_1.default.findOne({ 'email': email });
+            if (user == null) {
+                user = yield user_model_1.default.create({
+                    email: email,
+                    imgUrl: payload === null || payload === void 0 ? void 0 : payload.picture,
+                    name: payload === null || payload === void 0 ? void 0 : payload.name
+                });
+            }
+            const { accessToken, refreshToken } = generateTokens(user._id.toString());
+            if (user.tokens == null) {
+                user.tokens = [refreshToken];
+            }
+            else {
+                user.tokens.push(refreshToken);
+            }
+            yield user.save();
+            return res.status(200).send({
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                email: email,
+                _id: user._id,
+                imgUrl: user.imgUrl,
+            });
+        }
+    }
+    catch (error) {
+        return res.status(400).send(error.message);
+    }
+});
 exports.default = {
     register,
     login,
     logout,
-    refresh
+    refresh,
+    googleSignIn
 };
 //# sourceMappingURL=auth_controller.js.map

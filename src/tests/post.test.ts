@@ -8,7 +8,9 @@ import User from '../models/user_model';
 const testUser = {
     email: "psottest@gmail.com",
     password: "123456",
-    accessToken: null
+    accessToken: null,
+    name: "John",
+    imgUrl: "https://www.google.com"
   }
 
 let app: Express;
