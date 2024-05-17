@@ -182,6 +182,7 @@ const googleSignIn = async (req: Request, res: Response) => {
                 email: email,
                 _id: user._id,
                 imgUrl: user.imgUrl,
+                message: "Login successful",
             });
         }
 
@@ -192,10 +193,52 @@ const googleSignIn = async (req: Request, res: Response) => {
     
 }
 
+
+const getUserById = async (req: Request, res: Response) => {
+    console.log("enter get user by id",req.body.user);
+        try{
+            const item = await User.findById(req.body.user);
+            console.log("item",item.name);
+            if(!item){
+                res.status(404).send("not found");
+            }
+            else{
+                res.status(200).send(item);  
+            }   
+        }catch (error){
+            console.log(error);
+            res.status(400).send(error.message);
+        }
+    }
+
+    const editUser = async (req: Request, res: Response) => {
+        try {
+          const user = await User.findById(req.body.user);
+          if (!user) {
+            return res.status(404).send("not found");
+          }
+          user.name = req.body.name;
+          user.imgUrl = req.body.imgUrl;
+          // Do not update email here, ensure it's not inadvertently changed
+          await user.save();
+          return res.status(200).send(user);
+        } catch (error) {
+          console.log(error);
+          return res.status(400).send(error.message);
+        }
+      };
+      
+
+
 export default {
     register,
     login,
     logout,
     refresh,
-    googleSignIn
+    googleSignIn,
+    getUserById,
+    editUser
 }
+
+
+

@@ -26,9 +26,9 @@ class BaseController<ModelType> {
     }
     
     async getById (req: Request, res: Response)  {
-        console.log(req.params);
+        console.log(req.body.user);
         try{
-            const item = await this.ItemModel.findById(req.params.id);
+            const item = await this.ItemModel.findById(req.body.user);
             if(!item){
                 res.status(404).send("not found");
             }

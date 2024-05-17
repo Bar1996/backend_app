@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
 import authController from "../controllers/auth_controller";
+import authMiddleware from "../common/auth_middleware";
 
 /**
  * @swagger
@@ -130,6 +131,10 @@ router.get("/logout", authController.logout);
  *                          $ref: '#/components/schemas/Tokens'
  */
 router.get("/refresh", authController.refresh);
+
+router.get("/getById",authMiddleware, authController.getUserById);
+
+router.put("/update",authMiddleware, authController.editUser);
 
 
 
