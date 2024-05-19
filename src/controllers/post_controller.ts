@@ -8,8 +8,10 @@ class PostController extends baseController<IPost>{
         super(Post);
     }
     async post(req: Request, res: Response){
-        req.body.owner = req.body.user._id;
+        console.log("post in super class");
+        req.body.owner = req.body.user;
         super.post(req, res);
+        
 }
 }
 

@@ -3,6 +3,7 @@ import User from "../models/user_model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import Post from "../models/post_model";
 
 const client = new OAuth2Client();
 
@@ -227,6 +228,64 @@ const getUserById = async (req: Request, res: Response) => {
           return res.status(400).send(error.message);
         }
       };
+
+      const getUser = async (req: Request, res: Response) => {
+        try {
+        console.log("enter get user by id",req.params.id);
+          const user = await User.findById(req.params.id);
+            if (!user) {
+                return res.status(404).send("not found");
+            }
+            console.log("user",user);
+            return res.status(200).send(user);
+        } catch (error) {
+            console.log(error);
+            return res.status(400).send(error.message);
+        }
+    }
+
+    const getUserPosts = async (req: Request, res: Response) => {
+        const owner = req.body.user;
+        console.log("owner",owner);
+        try {
+           
+            const posts = await Post.find({ owner: owner });
+            return res.status(200).send(posts);
+        } catch (error) {
+            console.log(error);
+            return res.status(400).send(error.message);
+        }
+    }
+
+
+    const changePassword = async (req: Request, res: Response) => {
+        try {
+            const user = req.body.user;
+            const oldPassword = req.body.oldPassword;
+            const newPassword = req.body.newPassword;
+            if (oldPassword == null || newPassword == null) {
+                return res.status(400).send("Missing old password or new password");
+            }
+            const userObj = await User.findById(user);
+            if (userObj == null) {
+                return res.status(404).send("not found");
+            }
+            const valid = await bcrypt.compare(oldPassword, userObj.password);
+            if (!valid) {
+                return res.status(400).send("Invalid old password");
+            }
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+            userObj.password = hashedPassword;
+            await userObj.save();
+            return res.status(200).send(userObj);
+
+        } catch (error) {
+            console.log(error);
+            return res.status(400).send(error.message);
+        }
+    }
+    
       
 
 
@@ -237,7 +296,10 @@ export default {
     refresh,
     googleSignIn,
     getUserById,
-    editUser
+    editUser,
+    getUser,
+    getUserPosts,
+    changePassword
 }
 
 

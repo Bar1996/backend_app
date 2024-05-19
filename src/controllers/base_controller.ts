@@ -9,7 +9,6 @@ class BaseController<ModelType> {
         this.ItemModel = ItemModel;
     }   
     async get  (req: Request, res: Response){
-       
         console.log("get");
         try {
             if(req.query.name){

@@ -136,6 +136,14 @@ router.get("/getById",authMiddleware, authController.getUserById);
 
 router.put("/update",authMiddleware, authController.editUser);
 
+router.put("/updatePassword",authMiddleware, authController.changePassword);
+
+router.get("/posts", authMiddleware, authController.getUserPosts);
+
+router.get("/:id", authController.getUser);
+
+
+
 
 
 export default router;
