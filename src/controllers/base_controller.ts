@@ -9,7 +9,7 @@ class BaseController<ModelType> {
         this.ItemModel = ItemModel;
     }   
     async get  (req: Request, res: Response){
-        console.log("get");
+        console.log("get all");
         try {
             if(req.query.name){
                 const item  = await this.ItemModel.find({name: req.query.name});

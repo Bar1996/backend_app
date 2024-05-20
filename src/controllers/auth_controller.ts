@@ -31,7 +31,8 @@ const register = async (req: Request, res: Response) => {
             email: email,
             password: hashedPassword,
             imgUrl: imgUrl,
-            name: name
+            name: name,
+            userType: "local"
         });
 
         return res.status(200).send(newUser);
@@ -166,7 +167,8 @@ const googleSignIn = async (req: Request, res: Response) => {
                 user = await User.create({
                     email: email,
                     imgUrl: payload?.picture,
-                    name: payload?.name
+                    name: payload?.name,
+                    userType: "google"
                 });
             }
             const { accessToken, refreshToken } = generateTokens(user._id.toString());
