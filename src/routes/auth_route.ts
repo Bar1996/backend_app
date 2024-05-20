@@ -140,7 +140,11 @@ router.put("/updatePassword",authMiddleware, authController.changePassword);
 
 router.get("/posts", authMiddleware, authController.getUserPosts);
 
+router.get("/check", authMiddleware, authController.CheckAuth);
+
 router.get("/:id", authController.getUser);
+
+
 
 
 

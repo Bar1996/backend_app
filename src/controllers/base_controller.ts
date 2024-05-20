@@ -25,7 +25,6 @@ class BaseController<ModelType> {
     }
     
     async getById (req: Request, res: Response)  {
-        console.log(req.body.user);
         try{
             const item = await this.ItemModel.findById(req.body.user);
             if(!item){
@@ -52,7 +51,22 @@ class BaseController<ModelType> {
     }
     
     async put  (req: Request, res: Response) {
-        res.send("put");
+        console.log("put");
+        console.log(req.params);
+        try{
+            const item = await this.ItemModel.findById(req.params.id);
+            if(!item){
+                res.status(404).send("not found");
+            }
+            else{
+                item.set(req.body);
+                await item.save();
+                res.status(200).send(item);
+            }
+        } catch (error){
+            console.log(error);
+            res.status(400).send(error.message);
+        }
     }
     
     async remove (req: Request, res: Response) {

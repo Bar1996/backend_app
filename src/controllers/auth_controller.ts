@@ -231,7 +231,6 @@ const getUserById = async (req: Request, res: Response) => {
 
       const getUser = async (req: Request, res: Response) => {
         try {
-        console.log("enter get user by id",req.params.id);
           const user = await User.findById(req.params.id);
             if (!user) {
                 return res.status(404).send("not found");
@@ -285,6 +284,13 @@ const getUserById = async (req: Request, res: Response) => {
             return res.status(400).send(error.message);
         }
     }
+
+    const CheckAuth = async (req: Request, res: Response) => {
+        console.log("Checking token validity"); // Check if this gets printed
+        res.status(200).json({
+            message: "Authenticated",
+        });
+    }
     
       
 
@@ -299,7 +305,8 @@ export default {
     editUser,
     getUser,
     getUserPosts,
-    changePassword
+    changePassword,
+    CheckAuth
 }
 
 
