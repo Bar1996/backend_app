@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
 const auth_controller_1 = __importDefault(require("../controllers/auth_controller"));
+const auth_middleware_1 = __importDefault(require("../common/auth_middleware"));
 /**
  * @swagger
  * tags:
@@ -128,5 +129,11 @@ router.get("/logout", auth_controller_1.default.logout);
  *                          $ref: '#/components/schemas/Tokens'
  */
 router.get("/refresh", auth_controller_1.default.refresh);
+router.get("/getById", auth_middleware_1.default, auth_controller_1.default.getUserById);
+router.put("/update", auth_middleware_1.default, auth_controller_1.default.editUser);
+router.put("/updatePassword", auth_middleware_1.default, auth_controller_1.default.changePassword);
+router.get("/posts", auth_middleware_1.default, auth_controller_1.default.getUserPosts);
+router.get("/check", auth_middleware_1.default, auth_controller_1.default.CheckAuth);
+router.get("/:id", auth_controller_1.default.getUser);
 exports.default = router;
 //# sourceMappingURL=auth_route.js.map

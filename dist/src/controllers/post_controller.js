@@ -23,7 +23,8 @@ class PostController extends base_controller_1.default {
             post: { get: () => super.post }
         });
         return __awaiter(this, void 0, void 0, function* () {
-            req.body.owner = req.body.user._id;
+            console.log("post in super class");
+            req.body.owner = req.body.user;
             _super.post.call(this, req, res);
         });
     }

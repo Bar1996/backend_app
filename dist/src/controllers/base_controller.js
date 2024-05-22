@@ -15,7 +15,7 @@ class BaseController {
     }
     get(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("get");
+            console.log("get all");
             try {
                 if (req.query.name) {
                     const item = yield this.ItemModel.find({ name: req.query.name });
@@ -34,9 +34,8 @@ class BaseController {
     }
     getById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log(req.params);
             try {
-                const item = yield this.ItemModel.findById(req.params.id);
+                const item = yield this.ItemModel.findById(req.body.user);
                 if (!item) {
                     res.status(404).send("not found");
                 }
@@ -65,7 +64,23 @@ class BaseController {
     }
     put(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.send("put");
+            console.log("put");
+            console.log(req.params);
+            try {
+                const item = yield this.ItemModel.findById(req.params.id);
+                if (!item) {
+                    res.status(404).send("not found");
+                }
+                else {
+                    item.set(req.body);
+                    yield item.save();
+                    res.status(200).send(item);
+                }
+            }
+            catch (error) {
+                console.log(error);
+                res.status(400).send(error.message);
+            }
         });
     }
     remove(req, res) {

@@ -71,6 +71,7 @@ class BaseController<ModelType> {
     
     async remove (req: Request, res: Response) {
         console.log("delete");
+        console.log(req.params);
         try {
           await this.ItemModel.findByIdAndDelete(req.params.id);
           return res.status(200).send();

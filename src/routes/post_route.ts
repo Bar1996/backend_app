@@ -2,7 +2,7 @@ import express from "express";
 const router = express.Router();
 import postController from "../controllers/post_controller";
 import authMiddleware from "../common/auth_middleware";
-
+// TODO add swagger documentation
 
 router.get("/",authMiddleware, postController.get.bind(postController));
 
