@@ -3,7 +3,7 @@ import appInit from '../App';
 import mongoose  from 'mongoose';
 import {Express}  from 'express';
 import User from '../models/user_model';
-
+// TODO add tests for auth
 const user = {
     email: "authtest@gmail.com",
     password: "123456",

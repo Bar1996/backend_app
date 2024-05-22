@@ -132,6 +132,8 @@ router.get("/logout", authController.logout);
  */
 router.get("/refresh", authController.refresh);
 
+
+// TODO add swagger documentation
 router.get("/getById",authMiddleware, authController.getUserById);
 
 router.put("/update",authMiddleware, authController.editUser);

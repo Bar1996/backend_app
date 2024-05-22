@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 import Post from '../models/post_model';
 import { Express } from 'express';
 import User from '../models/user_model';
-
+// TODO add tests for post
 const testUser = {
     email: "psottest@gmail.com",
     password: "123456",

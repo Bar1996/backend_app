@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 
 const router = express.Router();
-
+// TODO add swagger documentation
 
 const base = "http://172.20.10.3:3000/uploads/";
 

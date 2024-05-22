@@ -15,12 +15,14 @@ const register = async (req: Request, res: Response) => {
     const imgUrl = req.body.imgUrl;
     const name = req.body.name;
 
-    if(email == null || password == null){
+    if(!email  || !password){
+        console.log("Missing email or password");
        return res.status(400).send("Missing email or password");
     }
     try {
         const user = await User.findOne({email: email});
         if(user){
+            console.log("Email already exists");
             return res.status(400).send("Email already exists");
         }
 
@@ -37,6 +39,7 @@ const register = async (req: Request, res: Response) => {
 
         return res.status(200).send(newUser);
     } catch (error){
+        console.log("enter chatch",error);
         return res.status(400).send(error.message);
     }
 }
@@ -64,7 +67,8 @@ const login = async (req: Request, res: Response) => {
 
     const email = req.body.email;
     const password = req.body.password;
-    if(email == null || password == null){
+    console.log("email",email, "password",password);
+    if(!email || !password ){
        return res.status(400).send("Missing email or password");
     }
    try {
