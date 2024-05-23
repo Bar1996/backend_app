@@ -2,7 +2,6 @@ import express from "express";
 import multer from "multer";
 
 const router = express.Router();
-// TODO add swagger documentation
 
 const base = "http://172.20.10.3:3000/uploads/";
 
@@ -16,6 +15,59 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+/**
+ * @swagger
+ * tags:
+ *   name: File Upload
+ *   description: The File Upload API
+ */
+
+/**
+ * @swagger
+ * /file/upload:
+ *  post:
+ *      summary: Upload a file
+ *      tags: [File Upload]
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              multipart/form-data:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          file:
+ *                              type: string
+ *                              format: binary
+ *      responses:
+ *          200:
+ *              description: File uploaded successfully
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *                                  description: Success message
+ *                              url:
+ *                                  type: string
+ *                                  description: URL of the uploaded file
+ *                          example:
+ *                              message: "Uploaded successfully"
+ *                              url: "http://172.20.10.3:3000/uploads/filename.jpg"
+ *          400:
+ *              description: No file uploaded
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *                                  description: Error message
+ *                          example:
+ *                              message: "No file uploaded"
+ */
 router.post("/upload", upload.single("file"), (req, res) => {
   console.log("uploading file");
   if (!req.file) {

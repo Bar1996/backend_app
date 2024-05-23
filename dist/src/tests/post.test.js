@@ -18,13 +18,14 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const post_model_1 = __importDefault(require("../models/post_model"));
 const user_model_1 = __importDefault(require("../models/user_model"));
 const testUser = {
-    email: "psottest@gmail.com",
+    email: "posttest@gmail.com",
     password: "123456",
     accessToken: null,
     name: "John",
     imgUrl: "https://www.google.com"
 };
 let app;
+let postId;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     app = yield (0, App_1.default)();
     console.log('beforeAll');
@@ -40,21 +41,57 @@ afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
 }));
 describe('Post', () => {
     test('GET /post - empty collection', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).get('/post');
+        const res = yield (0, supertest_1.default)(app).get('/post')
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
         expect(res.statusCode).toBe(200);
         const data = res.body;
         expect(data).toEqual([]);
     }));
     const post = {
-        title: "post title",
-        message: "post message",
-        owner: "Bar"
+        text: "post message",
+        owner: null,
+        imgUrl: "https://www.example.com",
+        timestamp: new Date().toISOString()
     };
-    test('POST /post - empty collection', () => __awaiter(void 0, void 0, void 0, function* () {
-        const res = yield (0, supertest_1.default)(app).post('/post')
+    test('POST /post/post - create post', () => __awaiter(void 0, void 0, void 0, function* () {
+        post.owner = (yield user_model_1.default.findOne({ email: testUser.email }))._id;
+        const res = yield (0, supertest_1.default)(app).post('/post/post')
             .set('Authorization', 'Bearer ' + testUser.accessToken)
             .send(post);
         expect(res.statusCode).toBe(201);
+        postId = res.body._id;
+        expect(res.body.text).toBe(post.text);
+    }));
+    test('GET /post - with one post', () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).get('/post')
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
+        expect(res.statusCode).toBe(200);
+        const data = res.body;
+        expect(data.length).toBe(1);
+        expect(data[0].text).toBe(post.text);
+    }));
+    test('GET /post/:id - get post by ID', () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).get(`/post/${postId}`)
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.text).toBe(post.text);
+    }));
+    test('PUT /post/:id - update post by ID', () => __awaiter(void 0, void 0, void 0, function* () {
+        const updatedPost = { text: "updated message", imgUrl: "https://www.updated.com" };
+        const res = yield (0, supertest_1.default)(app).put(`/post/${postId}`)
+            .set('Authorization', 'Bearer ' + testUser.accessToken)
+            .send(updatedPost);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.text).toBe(updatedPost.text);
+    }));
+    test('DELETE /post/:id - delete post by ID', () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).delete(`/post/${postId}`)
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
+        expect(res.statusCode).toBe(200);
+        const resCheck = yield (0, supertest_1.default)(app).get('/post')
+            .set('Authorization', 'Bearer ' + testUser.accessToken);
+        expect(resCheck.statusCode).toBe(200);
+        expect(resCheck.body).toEqual([]);
     }));
 });
 //# sourceMappingURL=post.test.js.map

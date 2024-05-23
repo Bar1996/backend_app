@@ -24,8 +24,8 @@ const user = {
     imgUrl: "https://www.google.com"
 };
 let app;
-let accessToken;
-let refreshToken;
+let accessToken = "";
+let refreshToken = "";
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     app = yield (0, App_1.default)();
     console.log('beforeAll');
@@ -33,7 +33,7 @@ beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
 }));
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
     console.log('afterAll');
-    mongoose_1.default.connection.close();
+    yield mongoose_1.default.connection.close();
 }));
 describe('Auth test', () => {
     test('POST /register', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -49,11 +49,6 @@ describe('Auth test', () => {
         refreshToken = res.body.refreshToken;
         expect(accessToken).not.toBeNull();
         expect(refreshToken).not.toBeNull();
-        // const res2 = await request(app).get('/student').set('Authorization', 'Bearer ' + accessToken);
-        // expect(res2.statusCode).toBe(200);
-        // const fakeToken = accessToken + 'a';
-        // const res3 = await request(app).get('/student').set('Authorization', 'Bearer ' + fakeToken);
-        // expect(res3.statusCode).not.toBe(200);
     }));
     const timeout = (ms) => {
         return new Promise((resolve) => {
@@ -65,7 +60,6 @@ describe('Auth test', () => {
         const res = yield (0, supertest_1.default)(app).post("/auth/login").send(user);
         expect(res.statusCode).toBe(200);
         console.log(res.body);
-        //const accessToken = res.body.accessToken;
         refreshToken = res.body.refreshToken;
         const res2 = yield (0, supertest_1.default)(app).get("/auth/refresh")
             .set('Authorization', 'Bearer ' + refreshToken)
@@ -75,16 +69,9 @@ describe('Auth test', () => {
         refreshToken = res2.body.refreshToken;
         expect(accessToken).not.toBeNull();
         expect(refreshToken).not.toBeNull();
-        // const res3 = await request(app).get("/student")
-        //     .set('Authorization', 'Bearer ' + accessToken);
-        // expect(res3.statusCode).toBe(200);
     }));
     test("refresh token after expiration", () => __awaiter(void 0, void 0, void 0, function* () {
-        //sleep 6 sec check if token is expired
         yield timeout(6000);
-        // const res = await request(app).get("/student")
-        //     .set('Authorization', 'Bearer ' + accessToken);
-        // expect(res.statusCode).not.toBe(200);
         const res2 = yield (0, supertest_1.default)(app).get("/auth/refresh")
             .set('Authorization', 'Bearer ' + refreshToken)
             .send();
@@ -93,9 +80,6 @@ describe('Auth test', () => {
         refreshToken = res2.body.refreshToken;
         expect(accessToken).not.toBeNull();
         expect(refreshToken).not.toBeNull();
-        // const res3 = await request(app).get("/student")
-        //     .set('Authorization', 'Bearer ' + accessToken);
-        // expect(res3.statusCode).toBe(200);
     }));
     test("refresh token violation", () => __awaiter(void 0, void 0, void 0, function* () {
         const res = yield (0, supertest_1.default)(app).get("/auth/refresh")
@@ -118,6 +102,47 @@ describe('Auth test', () => {
             .set('Authorization', 'Bearer ' + refreshToken)
             .send();
         expect(res3.statusCode).not.toBe(200);
+    }));
+    test("GET /auth/logout", () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).get("/auth/logout")
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(res.statusCode).toBe(200);
+        // Verify that the user's tokens are cleared
+        const userFromDb = yield user_model_1.default.findOne({ email: user.email });
+        expect(userFromDb === null || userFromDb === void 0 ? void 0 : userFromDb.tokens.length).toBe(0);
+    }));
+    test("GET /auth/getById", () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).get("/auth/getById")
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send({ user: user.email });
+        expect(res.statusCode).toBe(200);
+    }));
+    test("PUT /auth/update", () => __awaiter(void 0, void 0, void 0, function* () {
+        const updateData = { user: user.email, name: "John Updated", imgUrl: "https://www.example.com" };
+        const res = yield (0, supertest_1.default)(app).put("/auth/update")
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send(updateData);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.name).toBe("John Updated");
+    }));
+    test("PUT /auth/updatePassword", () => __awaiter(void 0, void 0, void 0, function* () {
+        const updatePasswordData = { user: user.email, oldPassword: user.password, newPassword: "newpassword123" };
+        const res = yield (0, supertest_1.default)(app).put("/auth/updatePassword")
+            .set('Authorization', 'Bearer ' + accessToken)
+            .send(updatePasswordData);
+        expect(res.statusCode).toBe(200);
+    }));
+    test("GET /auth/check", () => __awaiter(void 0, void 0, void 0, function* () {
+        const res = yield (0, supertest_1.default)(app).get("/auth/check")
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(res.statusCode).toBe(200);
+    }));
+    test("GET /auth/:id", () => __awaiter(void 0, void 0, void 0, function* () {
+        const userFromDb = yield user_model_1.default.findOne({ email: user.email });
+        const res = yield (0, supertest_1.default)(app).get(`/auth/${userFromDb === null || userFromDb === void 0 ? void 0 : userFromDb._id}`)
+            .set('Authorization', 'Bearer ' + accessToken);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.email).toBe(user.email);
     }));
 });
 //# sourceMappingURL=auth.test.js.map

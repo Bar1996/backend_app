@@ -10,9 +10,11 @@ class BaseController<ModelType> {
     }   
     async get  (req: Request, res: Response){
         console.log("get all");
+    
         try {
-            if(req.query.name){
-                const item  = await this.ItemModel.find({name: req.query.name});
+            if(req.params.id){
+                console.log("get by id in if");
+                const item  = await this.ItemModel.findById(req.params.id);
                 res.status(200).send(item);
             }   else{
                 const item = await this.ItemModel.find();
@@ -25,6 +27,7 @@ class BaseController<ModelType> {
     }
     
     async getById (req: Request, res: Response)  {
+        console.log("get by id");
         try{
             const item = await this.ItemModel.findById(req.body.user);
             if(!item){

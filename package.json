@@ -7,7 +7,6 @@
     "start": "cp .env_dev .env && tsc && node dist/src/Server.js",
     "dev": "cp .env_dev .env && nodemon ./src/Server.ts",
     "test": "cp .env_test .env && tsc && jest --detectOpenHandles --forceExit",
-    "testStudent": "cp .env_test .env && jest --detectOpenHandles --forceExit ./src/tests/student.test.ts",
     "testAuth": "cp .env_test .env && jest --detectOpenHandles --forceExit ./src/tests/auth.test.ts",
     "testPost": "cp .env_test .env && jest --detectOpenHandles --forceExit ./src/tests/post.test.ts",
     "testFile": "cp .env_test .env && jest --detectOpenHandles --forceExit ./src/tests/file.test.ts",

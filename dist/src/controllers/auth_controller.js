@@ -24,12 +24,14 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const password = req.body.password;
     const imgUrl = req.body.imgUrl;
     const name = req.body.name;
-    if (email == null || password == null) {
+    if (!email || !password) {
+        console.log("Missing email or password");
         return res.status(400).send("Missing email or password");
     }
     try {
         const user = yield user_model_1.default.findOne({ email: email });
         if (user) {
+            console.log("Email already exists");
             return res.status(400).send("Email already exists");
         }
         const salt = yield bcrypt_1.default.genSalt(10);
@@ -44,6 +46,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.status(200).send(newUser);
     }
     catch (error) {
+        console.log("enter chatch", error);
         return res.status(400).send(error.message);
     }
 });
@@ -66,7 +69,8 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("login");
     const email = req.body.email;
     const password = req.body.password;
-    if (email == null || password == null) {
+    console.log("email", email, "password", password);
+    if (!email || !password) {
         return res.status(400).send("Missing email or password");
     }
     try {
@@ -97,7 +101,29 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(400).send("logout");
+    console.log("logout");
+    const authHeader = req.headers['authorization'];
+    const accessToken = authHeader && authHeader.split(' ')[1];
+    if (accessToken == null) {
+        return res.status(401).send("missing token");
+    }
+    jsonwebtoken_1.default.verify(accessToken, process.env.TOKEN_SECRET, (err, userInfo) => __awaiter(void 0, void 0, void 0, function* () {
+        if (err) {
+            return res.status(403).send("invalid token");
+        }
+        try {
+            const user = yield user_model_1.default.findById(userInfo._id);
+            if (user == null) {
+                return res.status(404).send("not found");
+            }
+            user.tokens = [];
+            yield user.save();
+            return res.status(200).send("logout successful");
+        }
+        catch (error) {
+            return res.status(400).send(error.message);
+        }
+    }));
 });
 const refresh = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("refresh");

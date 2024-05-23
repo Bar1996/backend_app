@@ -103,8 +103,37 @@ const login = async (req: Request, res: Response) => {
 }  
 
 const logout = async (req: Request, res: Response) => {
-    res.status(400).send("logout");
-}
+    console.log("logout");
+    const authHeader = req.headers['authorization'];
+    const accessToken = authHeader && authHeader.split(' ')[1];
+    if (accessToken == null) {
+        return res.status(401).send("missing token");
+    }
+
+    jwt.verify(accessToken, process.env.TOKEN_SECRET, async (err, userInfo: { _id: string }) => {
+        if (err) {
+            return res.status(403).send("invalid token");
+        }
+
+        try {
+            const user = await User.findById(userInfo._id);
+            if (user == null) {
+                return res.status(404).send("not found");
+            }
+            user.tokens = [];
+            await user.save();
+            return res.status(200).send("logout successful");
+        } catch (error) {
+            return res.status(400).send(error.message);
+        }
+    });
+};
+
+
+
+
+
+
 
 const refresh = async (req: Request, res: Response) => {
     console.log("refresh");

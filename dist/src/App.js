@@ -8,7 +8,6 @@ const app = (0, express_1.default)();
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const student_route_1 = __importDefault(require("./routes/student_route"));
 const post_route_1 = __importDefault(require("./routes/post_route"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const auth_route_1 = __importDefault(require("./routes/auth_route"));
@@ -21,7 +20,6 @@ const initApp = () => {
         mongoose_1.default.connect(process.env.DATABASE_URL).then(() => {
             app.use(body_parser_1.default.urlencoded({ extended: true, limit: '1mb' }));
             app.use(body_parser_1.default.json());
-            app.use("/student", student_route_1.default);
             app.use("/post", post_route_1.default);
             app.use("/auth", auth_route_1.default);
             app.use("/file", file_route_1.default);
