@@ -134,12 +134,20 @@ router.post("/login", auth_controller_1.default.login);
  *  get:
  *      summary: Logs out the user
  *      tags: [Auth]
- *      description: Need to provide the refresh token in the auth header
+ *      description: Logs out the user by clearing their authentication tokens. The access token must be provided in the Authorization header.
  *      security:
  *          - bearerAuth: []
  *      responses:
  *          200:
  *              description: The user is logged out successfully
+ *          401:
+ *              description: Missing token
+ *          403:
+ *              description: Invalid token
+ *          404:
+ *              description: User not found
+ *          400:
+ *              description: Bad request
  */
 router.get("/logout", auth_controller_1.default.logout);
 /**

@@ -16,8 +16,6 @@ class BaseController {
     get(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("get all");
-            console.log("req.params: ", req.params);
-            console.log("req.params.id: ", req.params.id);
             try {
                 if (req.params.id) {
                     console.log("get by id in if");
